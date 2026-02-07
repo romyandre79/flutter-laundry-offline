@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => AuthCubit()..checkAuthStatus())],
       child: MaterialApp(
-        title: 'Laundry',
+        title: 'Laundry POS (Offline)',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: AuthWrapper(showOnboarding: showOnboarding),

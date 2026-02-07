@@ -5,15 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 class AppThemeColors {
   AppThemeColors._();
 
-  // Primary Purple Palette
-  static const Color primary = Color(0xFF7B2D8E);
-  static const Color primaryLight = Color(0xFF9B4DB0);
-  static const Color primaryDark = Color(0xFF5A1D6B);
-  static const Color primarySurface = Color(0xFFF3E5F5);
+  // Primary Blue Palette
+  static const Color primary = Color(0xFF2196F3);
+  static const Color primaryLight = Color(0xFF64B5F6);
+  static const Color primaryDark = Color(0xFF1976D2);
+  static const Color primarySurface = Color(0xFFE3F2FD);
 
-  // Secondary Colors
-  static const Color secondary = Color(0xFFE1BEE7);
-  static const Color secondaryLight = Color(0xFFF8E8FC);
+  // Secondary Colors (Complementary or Neutral)
+  static const Color secondary = Color(0xFF90CAF9);
+  static const Color secondaryLight = Color(0xFFE1F5FE);
 
   // Background Colors
   static const Color background = Color(0xFFFAF7FB);
@@ -44,13 +44,13 @@ class AppThemeColors {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF9B4DB0), Color(0xFF7B2D8E)],
+    colors: [Color(0xFF64B5F6), Color(0xFF2196F3)],
   );
 
   static const LinearGradient headerGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF9B4DB0), Color(0xFF7B2D8E)],
+    colors: [Color(0xFF64B5F6), Color(0xFF2196F3)],
   );
 }
 

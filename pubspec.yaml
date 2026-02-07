@@ -41,11 +41,11 @@ flutter_launcher_icons:
   ios: true
   windows:
     generate: true
-    image_path: "assets/icons/logolaundry.png"
+    image_path: "assets/icons/logopos.png"
     icon_size: 48
-  image_path: "assets/icons/logolaundry.png"
+  image_path: "assets/icons/logopos.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icons/logolaundry.png"
+  adaptive_icon_foreground: "assets/icons/logopos.png"
 
 flutter:
   uses-material-design: true
