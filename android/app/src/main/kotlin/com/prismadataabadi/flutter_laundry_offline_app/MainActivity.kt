@@ -1,4 +1,4 @@
-package com.prismadataabadi.flutter_laundry_offline_app
+package com.prismadataabadi.kreatif_laundry_offline_app
 
 import io.flutter.embedding.android.FlutterActivity
 

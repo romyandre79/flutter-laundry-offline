@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_laundry_offline_app/core/constants/colors.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/colors.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
 
 class StatusBadge extends StatelessWidget {
   final OrderStatus status;

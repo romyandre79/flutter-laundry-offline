@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_laundry_offline_app/data/models/order_item.dart';
-import 'package:flutter_laundry_offline_app/data/models/payment.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order_item.dart';
+import 'package:kreatif_laundry_offline_app/data/models/payment.dart';
 
 enum OrderStatus { pending, process, ready, done }
 
@@ -77,6 +77,7 @@ class Order extends Equatable {
   final int? createdBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final List<String> images;
 
   // Relations (loaded separately)
   final List<OrderItem>? items;
@@ -101,6 +102,7 @@ class Order extends Equatable {
     this.updatedAt,
     this.items,
     this.payments,
+    this.images = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -148,6 +150,7 @@ class Order extends Equatable {
       updatedAt: map['updated_at'] != null
           ? DateTime.parse(map['updated_at'] as String)
           : null,
+      images: const [], // Images loaded separately
     );
   }
 
@@ -170,6 +173,7 @@ class Order extends Equatable {
     DateTime? updatedAt,
     List<OrderItem>? items,
     List<Payment>? payments,
+    List<String>? images,
   }) {
     return Order(
       id: id ?? this.id,
@@ -190,6 +194,7 @@ class Order extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       items: items ?? this.items,
       payments: payments ?? this.payments,
+      images: images ?? this.images,
     );
   }
 
@@ -253,5 +258,6 @@ class Order extends Equatable {
         createdBy,
         createdAt,
         updatedAt,
+        images,
       ];
 }

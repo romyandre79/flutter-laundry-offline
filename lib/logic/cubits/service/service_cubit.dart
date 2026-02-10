@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/data/models/service.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/service_repository.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/service/service_state.dart';
+import 'package:kreatif_laundry_offline_app/data/models/service.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/service_repository.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/service/service_state.dart';
 
 class ServiceCubit extends Cubit<ServiceState> {
   final ServiceRepository _serviceRepository;

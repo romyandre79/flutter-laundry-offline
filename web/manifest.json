@@ -1,6 +1,6 @@
 {
-    "name": "flutter_laundry_offline_app",
-    "short_name": "flutter_laundry_offline_app",
+    "name": "kreatif_laundry_offline_app",
+    "short_name": "kreatif_laundry_offline_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

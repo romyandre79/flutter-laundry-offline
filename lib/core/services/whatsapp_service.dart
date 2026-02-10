@@ -1,9 +1,11 @@
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/settings_repository.dart';
-import 'package:flutter_laundry_offline_app/core/utils/currency_formatter.dart';
-import 'package:flutter_laundry_offline_app/core/utils/date_formatter.dart';
-import 'package:flutter_laundry_offline_app/core/constants/app_constants.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/settings_repository.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/currency_formatter.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/date_formatter.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
 
 class WhatsAppService {
   static final WhatsAppService _instance = WhatsAppService._internal();
@@ -29,6 +31,22 @@ class WhatsAppService {
 
     final laundryInfo = await _getLaundryInfo();
     final message = _buildReceiptMessage(order, laundryInfo);
+    
+    // If has images, use Share Plus
+    if (order.images.isNotEmpty) {
+      try {
+        final files = order.images.map((path) => XFile(path)).toList();
+        await Share.shareXFiles(
+          files,
+          text: message,
+        );
+        return true;
+      } catch (e) {
+        throw Exception('Gagal membagikan gambar: ${e.toString()}');
+      }
+    }
+
+    // If text only, use URL Launcher to direct WhatsApp
     final phoneNumber = order.whatsappNumber;
 
     if (phoneNumber.isEmpty) {

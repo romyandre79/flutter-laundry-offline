@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/core/utils/currency_formatter.dart';
-import 'package:flutter_laundry_offline_app/data/models/customer.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_state.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/customers/customer_form_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/customers/customer_detail_screen.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/currency_formatter.dart';
+import 'package:kreatif_laundry_offline_app/data/models/customer.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_state.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/customers/customer_form_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/customers/customer_detail_screen.dart';
 
 class CustomerListScreen extends StatefulWidget {
   const CustomerListScreen({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/order_repository.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/payment_repository.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/dashboard/dashboard_state.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/order_repository.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/payment_repository.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/dashboard/dashboard_state.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
   final OrderRepository _orderRepository;

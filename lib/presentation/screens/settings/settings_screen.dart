@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_laundry_offline_app/core/constants/app_constants.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/data/models/user.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/settings/settings_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/settings/settings_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/user/user_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/service/service_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/settings/user_management_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/services/service_list_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/customers/customer_list_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/settings/printer_settings_screen.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/data/models/user.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/settings/settings_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/settings/settings_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/user/user_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/service/service_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/settings/user_management_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/services/service_list_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/customers/customer_list_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/settings/printer_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

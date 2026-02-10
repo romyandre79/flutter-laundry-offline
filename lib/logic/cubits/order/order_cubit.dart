@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/utils/invoice_generator.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/data/models/order_item.dart';
-import 'package:flutter_laundry_offline_app/data/models/payment.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/customer_repository.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/order_repository.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/payment_repository.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_state.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/invoice_generator.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order_item.dart';
+import 'package:kreatif_laundry_offline_app/data/models/payment.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/customer_repository.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/order_repository.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/payment_repository.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_state.dart';
 
 class OrderCubit extends Cubit<OrderState> {
   final OrderRepository _orderRepository;
@@ -108,6 +108,7 @@ class OrderCubit extends Cubit<OrderState> {
     int? createdBy,
     int initialPayment = 0,
     PaymentMethod paymentMethod = PaymentMethod.cash,
+    List<String> images = const [],
   }) async {
     emit(const OrderLoading());
 
@@ -174,6 +175,7 @@ class OrderCubit extends Cubit<OrderState> {
         paid: paidAmount,
         notes: notes?.trim(),
         createdBy: createdBy,
+        images: images,
       );
 
       // Prepare initial payment if any

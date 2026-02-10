@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_laundry_offline_app/core/services/printer_service.dart';
+import 'package:kreatif_laundry_offline_app/core/services/printer_service.dart';
 
 abstract class PrinterState extends Equatable {
   const PrinterState();

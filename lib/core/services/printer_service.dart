@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/core/services/laundry_print.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/core/services/laundry_print.dart';
+import 'package:kreatif_laundry_offline_app/core/services/pdf_service.dart';
 
 class BluetoothDevice {
   final String name;
@@ -186,9 +188,9 @@ class PrinterService {
   /// Print order receipt
   Future<bool> printReceipt(Order order) async {
     if (Platform.isWindows) {
-      // Return true to pretend it worked or throw to show "Not supported"
-      // Throwing is safer so the UI knows it failed (or we can handle it in UI)
-      throw Exception('Printing is not supported on Windows yet.');
+      // Use PDF Printing on Windows
+      await PdfService.instance.printOrderReceipt(order);
+      return true;
     }
     if (!await ensureConnected()) {
       throw Exception('Printer tidak terhubung. Silakan hubungkan printer di Settings.');

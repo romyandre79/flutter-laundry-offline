@@ -1,13 +1,13 @@
 ## Tentang Aplikasi
 
-**Laundry** adalah aplikasi kasir laundry modern yang dirancang khusus untuk UMKM Indonesia. Aplikasi ini berjalan **100% offline** - tidak memerlukan koneksi internet untuk beroperasi. Semua data tersimpan aman di perangkat lokal.
+**Kreatif Laundry** adalah aplikasi kasir Kreatif Laundry modern yang dirancang khusus untuk UMKM Indonesia. Aplikasi ini berjalan **100% offline** - tidak memerlukan koneksi internet untuk beroperasi. Semua data tersimpan aman di perangkat lokal.
 
 ### Fitur Utama
 
 - **Full Offline Mode** - Aplikasi berjalan tanpa internet
-- **Manajemen Order** - Buat, edit, dan kelola pesanan laundry
+- **Manajemen Order** - Buat, edit, dan kelola pesanan Kreatif Laundry
 - **Manajemen Pelanggan** - Database pelanggan lengkap
-- **Paket Layanan** - Kelola berbagai jenis layanan laundry
+- **Paket Layanan** - Kelola berbagai jenis layanan Kreatif Laundry
 - **Laporan Penjualan** - Analisa pendapatan harian, mingguan, bulanan
 - **Multi User** - Support Owner dan Kasir dengan hak akses berbeda
 - **Cetak Struk** - Dukungan printer thermal Bluetooth (58mm/80mm)
@@ -123,15 +123,15 @@ Output: `build/app/outputs/bundle/release/app-release.aab`
 
 ### 1. Generate Keystore
 ```bash
-keytool -genkey -v -keystore ~/laundry-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias laundry
+keytool -genkey -v -keystore ~/Kreatif Laundry-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias Kreatif Laundry
 ```
 
 ### 2. Buat file `android/key.properties`
 ```properties
 storePassword=<password-anda>
 keyPassword=<password-anda>
-keyAlias=laundry
-storeFile=/Users/<username>/laundry-release-key.jks
+keyAlias=Kreatif Laundry
+storeFile=/Users/<username>/Kreatif Laundry-release-key.jks
 ```
 
 > **PENTING:** Tambahkan `key.properties` ke `.gitignore` agar tidak ter-commit!
@@ -255,7 +255,7 @@ flutter build ios --release
 flutter build ipa
 ```
 
-Output: `build/ios/ipa/flutter_laundry_offline_app.ipa`
+Output: `build/ios/ipa/flutter_Kreatif Laundry_offline_app.ipa`
 
 ### Submit ke App Store
 
@@ -269,7 +269,7 @@ Output: `build/ios/ipa/flutter_laundry_offline_app.ipa`
 ## Configuration
 
 ### Package Name
-Current: `com.prismadataabadi.laundryoffline`
+Current: `com.prismadataabadi.Kreatif Laundryoffline`
 
 Untuk mengubah package name:
 ```bash
@@ -277,7 +277,7 @@ flutter pub run change_app_package_name:main com.yourcompany.yourapp
 ```
 
 ### App Icon
-Logo: `assets/icons/logolaundry.png`
+Logo: `assets/icons/logoKreatif Laundry.png`
 
 Regenerate icons:
 ```bash
@@ -287,12 +287,12 @@ flutter pub run flutter_launcher_icons
 ### App Name
 Edit `lib/core/constants/app_constants.dart`:
 ```dart
-static const String appName = 'Laundry';
+static const String appName = 'Kreatif Laundry';
 ```
 
 Dan `android/app/src/main/AndroidManifest.xml`:
 ```xml
-android:label="Laundry"
+android:label="Kreatif Laundry"
 ```
 
 ---

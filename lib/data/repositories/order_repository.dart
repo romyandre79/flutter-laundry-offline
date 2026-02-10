@@ -1,8 +1,8 @@
-import 'package:flutter_laundry_offline_app/data/database/database_helper.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/data/models/order_item.dart';
-import 'package:flutter_laundry_offline_app/data/models/payment.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/customer_repository.dart';
+import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order_item.dart';
+import 'package:kreatif_laundry_offline_app/data/models/payment.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/customer_repository.dart';
 
 class OrderRepository {
   final DatabaseHelper _databaseHelper;
@@ -73,7 +73,15 @@ class OrderRepository {
     );
     final payments = paymentsResult.map((map) => Payment.fromMap(map)).toList();
 
-    return order.copyWith(items: items, payments: payments);
+    // Get images
+    final imagesResult = await db.query(
+      'order_images',
+      where: 'order_id = ?',
+      whereArgs: [id],
+    );
+    final images = imagesResult.map((map) => map['image_path'] as String).toList();
+
+    return order.copyWith(items: items, payments: payments, images: images);
   }
 
   /// Create new order with items
@@ -147,6 +155,17 @@ class OrderRepository {
         });
       }
 
+      // Insert images
+      if (order.images.isNotEmpty) {
+        for (final imagePath in order.images) {
+          await txn.insert('order_images', {
+            'order_id': orderId,
+            'image_path': imagePath,
+            'created_at': now,
+          });
+        }
+      }
+      
       return order.copyWith(id: orderId, customerId: customerId);
     });
 

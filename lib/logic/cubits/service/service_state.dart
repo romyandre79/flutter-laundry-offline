@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_laundry_offline_app/data/models/service.dart';
+import 'package:kreatif_laundry_offline_app/data/models/service.dart';
 
 abstract class ServiceState extends Equatable {
   const ServiceState();

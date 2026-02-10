@@ -1,5 +1,5 @@
-import 'package:flutter_laundry_offline_app/data/database/database_helper.dart';
-import 'package:flutter_laundry_offline_app/data/models/customer.dart';
+import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
+import 'package:kreatif_laundry_offline_app/data/models/customer.dart';
 
 class CustomerRepository {
   final DatabaseHelper _databaseHelper;

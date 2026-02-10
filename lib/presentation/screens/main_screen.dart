@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/data/models/user.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/user/user_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/report/report_cubit.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/dashboard/dashboard_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/orders/order_list_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/reports/report_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/settings/settings_screen.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/data/models/user.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/user/user_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/report/report_cubit.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/dashboard/dashboard_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/orders/order_list_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/reports/report_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/settings/settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

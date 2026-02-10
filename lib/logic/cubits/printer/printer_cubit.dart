@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/services/printer_service.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/printer/printer_state.dart';
+import 'package:kreatif_laundry_offline_app/core/services/printer_service.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_state.dart';
 
 class PrinterCubit extends Cubit<PrinterState> {
   final PrinterService _printerService;

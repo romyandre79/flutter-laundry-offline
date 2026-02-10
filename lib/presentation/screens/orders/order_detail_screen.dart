@@ -1,19 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/core/utils/currency_formatter.dart';
-import 'package:flutter_laundry_offline_app/core/utils/date_formatter.dart';
-import 'package:flutter_laundry_offline_app/core/utils/thousand_separator_formatter.dart';
-import 'package:flutter_laundry_offline_app/data/models/order.dart';
-import 'package:flutter_laundry_offline_app/data/models/payment.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/printer/printer_state.dart';
-import 'package:flutter_laundry_offline_app/core/services/whatsapp_service.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/currency_formatter.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/date_formatter.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/thousand_separator_formatter.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order.dart';
+import 'package:kreatif_laundry_offline_app/data/models/payment.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_state.dart';
+import 'package:kreatif_laundry_offline_app/core/services/whatsapp_service.dart';
+import 'package:kreatif_laundry_offline_app/core/services/pdf_service.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final int orderId;
@@ -385,6 +387,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     printerCubit.printReceipt(order);
   }
 
+  void _printLabels(Order order) async {
+    try {
+      await PdfService.instance.printItemLabels(order);
+    } catch (e) {
+      if (mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppThemeColors.error,
+          ),
+        );
+      }
+    }
+  }
+
   void _showAddPaymentDialog(Order order) {
     final amountController = TextEditingController();
     PaymentMethod selectedMethod = PaymentMethod.cash;
@@ -630,6 +647,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
                     const SizedBox(height: AppSpacing.md),
 
+                    // Images
+                    _buildImagesCard(order),
+
+                    if (order.images.isNotEmpty) const SizedBox(height: AppSpacing.md),
+
                     // Items
                     _buildItemsCard(order),
 
@@ -714,6 +736,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     child: const Icon(
                       Icons.share,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                GestureDetector(
+                  onTap: () => _printLabels(order),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: AppRadius.smRadius,
+                    ),
+                    child: const Icon(
+                      Icons.qr_code,
                       color: Colors.white,
                       size: 20,
                     ),
@@ -1509,6 +1548,74 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Text(
               order.notes!,
               style: AppTypography.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildImagesCard(Order order) {
+    if (order.images.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppRadius.lgRadius,
+        boxShadow: AppShadows.small,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto Laundry',
+              style: AppTypography.labelMedium.copyWith(
+                color: AppThemeColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: order.images.length,
+                separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                          child: InteractiveViewer(
+                            child: Image.file(
+                              File(order.images[index]),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: AppRadius.mdRadius,
+                      child: Image.file(
+                        File(order.images[index]),
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 100,
+                          height: 100,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

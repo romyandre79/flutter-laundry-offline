@@ -1,4 +1,4 @@
-import 'package:flutter_laundry_offline_app/data/database/database_helper.dart';
+import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
 
 class SettingsRepository {
   final DatabaseHelper _databaseHelper;

@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/core/utils/date_formatter.dart';
-import 'package:flutter_laundry_offline_app/data/database/database_helper.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/auth/login_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/main_screen.dart';
-import 'package:flutter_laundry_offline_app/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/date_formatter.dart';
+import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/auth/login_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/main_screen.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/onboarding/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

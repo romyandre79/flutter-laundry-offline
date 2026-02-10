@@ -1,22 +1,25 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kreatif_laundry_offline_app/presentation/screens/common/windows_camera_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_laundry_offline_app/core/constants/colors.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/core/utils/currency_formatter.dart';
-import 'package:flutter_laundry_offline_app/core/utils/thousand_separator_formatter.dart';
-import 'package:flutter_laundry_offline_app/data/models/customer.dart';
-import 'package:flutter_laundry_offline_app/data/models/order_item.dart';
-import 'package:flutter_laundry_offline_app/data/models/payment.dart';
-import 'package:flutter_laundry_offline_app/data/models/service.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/order/order_state.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/service/service_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/service/service_state.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/colors.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/currency_formatter.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/thousand_separator_formatter.dart';
+import 'package:kreatif_laundry_offline_app/data/models/customer.dart';
+import 'package:kreatif_laundry_offline_app/data/models/order_item.dart';
+import 'package:kreatif_laundry_offline_app/data/models/payment.dart';
+import 'package:kreatif_laundry_offline_app/data/models/service.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/order/order_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/service/service_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/service/service_state.dart';
 
 class OrderFormScreen extends StatefulWidget {
   const OrderFormScreen({super.key});
@@ -41,6 +44,10 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
 
   // Order items
   final List<_OrderItemEntry> _items = [];
+  
+  // Images
+  final List<XFile> _capturedImages = [];
+  final ImagePicker _picker = ImagePicker();
 
   int get _totalPrice {
     return _items.fold(0, (sum, item) => sum + item.subtotal);
@@ -203,6 +210,70 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     if (picked != null) {
       setState(() => _dueDate = picked);
     }
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      if (Platform.isWindows) {
+        final XFile? photo = await Navigator.push<XFile?>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WindowsCameraScreen(),
+          ),
+        );
+        
+        if (photo != null) {
+          setState(() {
+            _capturedImages.add(photo);
+          });
+        }
+        return;
+      }
+      
+      // Fallback/Standard logic for other platforms
+      final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+      final source = isDesktop ? ImageSource.gallery : ImageSource.camera;
+
+      final XFile? photo = await _picker.pickImage(
+        source: source,
+        imageQuality: 50, // Compress to save space
+      );
+      
+      if (photo != null) {
+        setState(() {
+          _capturedImages.add(photo);
+        });
+      }
+    } catch (e) {
+      // Fallback try: if camera fails (e.g. no camera), try gallery
+      if (e.toString().contains('camera') || e.toString().contains('delegate')) {
+        try {
+           final XFile? photo = await _picker.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 50,
+          );
+          if (photo != null) {
+            setState(() {
+              _capturedImages.add(photo);
+            });
+          }
+          return;
+        } catch (_) {}
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mengambil foto: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _capturedImages.removeAt(index);
+    });
   }
 
   void _selectCustomer(Customer customer) {
@@ -404,6 +475,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           createdBy: userId,
           initialPayment: payment,
           paymentMethod: _paymentMethod,
+          images: _capturedImages.map((e) => e.path).toList(),
         );
   }
 
@@ -603,6 +675,82 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 24),
+
+              // Photos Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildSectionTitle('Foto Laundry'),
+                  IconButton(
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.camera_alt, color: AppThemeColors.primary),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (_capturedImages.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Belum ada foto',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 100,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _capturedImages.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(_capturedImages[index].path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () => _removeImage(index),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 14,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
 
               const SizedBox(height: 24),
 

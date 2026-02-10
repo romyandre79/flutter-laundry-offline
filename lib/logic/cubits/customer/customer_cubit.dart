@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/data/models/customer.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/customer_repository.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/customer/customer_state.dart';
+import 'package:kreatif_laundry_offline_app/data/models/customer.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/customer_repository.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/customer/customer_state.dart';
 
 class CustomerCubit extends Cubit<CustomerState> {
   final CustomerRepository _customerRepository;
@@ -48,7 +48,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
     try {
       final created = await _customerRepository.createCustomer(customer);
-      emit(CustomerOperationSuccess('Customer berhasil ditambahkan', customer: created));
+      emit(CustomerOperationSuccess('Pelanggan berhasil ditambahkan', customer: created));
       await loadCustomers();
     } catch (e) {
       emit(CustomerError(e.toString().replaceAll('Exception: ', '')));
@@ -62,7 +62,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
     try {
       await _customerRepository.updateCustomer(customer);
-      emit(const CustomerOperationSuccess('Customer berhasil diupdate'));
+      emit(const CustomerOperationSuccess('Pelanggan berhasil diupdate'));
       await loadCustomers();
     } catch (e) {
       emit(CustomerError(e.toString().replaceAll('Exception: ', '')));
@@ -76,7 +76,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
     try {
       await _customerRepository.deleteCustomer(id);
-      emit(const CustomerOperationSuccess('Customer berhasil dihapus'));
+      emit(const CustomerOperationSuccess('Pelanggan berhasil dihapus'));
       await loadCustomers();
     } catch (e) {
       emit(CustomerError(e.toString().replaceAll('Exception: ', '')));

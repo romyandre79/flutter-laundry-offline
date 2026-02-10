@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:flutter_laundry_offline_app/core/constants/app_constants.dart';
-import 'package:flutter_laundry_offline_app/core/utils/password_helper.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/password_helper.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -117,6 +117,17 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create Order Images table
+    await db.execute('''
+      CREATE TABLE order_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id INTEGER NOT NULL,
+        image_path TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+      )
+    ''');
+
     // Create Payments table
     await db.execute('''
       CREATE TABLE payments (
@@ -166,6 +177,9 @@ class DatabaseHelper {
 
     // Order Items indexes
     await db.execute('CREATE INDEX idx_order_items_order ON order_items(order_id)');
+    
+    // Order Images indexes
+    await db.execute('CREATE INDEX idx_order_images_order ON order_images(order_id)');
 
     // Payments indexes
     await db.execute('CREATE INDEX idx_payments_order ON payments(order_id)');
@@ -224,6 +238,20 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       // Add change column to payments table
       await db.execute('ALTER TABLE payments ADD COLUMN change INTEGER DEFAULT 0');
+    }
+
+    if (oldVersion < 3) {
+      // Create Order Images table
+      await db.execute('''
+        CREATE TABLE order_images (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          order_id INTEGER NOT NULL,
+          image_path TEXT NOT NULL,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+        )
+      ''');
+      await db.execute('CREATE INDEX idx_order_images_order ON order_images(order_id)');
     }
   }
 

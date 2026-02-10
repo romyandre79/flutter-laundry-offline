@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
-import 'package:flutter_laundry_offline_app/core/services/printer_service.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/printer/printer_state.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/services/printer_service.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_state.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PrinterSettingsScreen extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_laundry_offline_app/core/theme/app_theme.dart';
+import 'package:kreatif_laundry_offline_app/core/theme/app_theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onComplete;

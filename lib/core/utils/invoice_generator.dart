@@ -1,6 +1,6 @@
-import 'package:flutter_laundry_offline_app/core/constants/app_constants.dart';
-import 'package:flutter_laundry_offline_app/core/utils/date_formatter.dart';
-import 'package:flutter_laundry_offline_app/data/database/database_helper.dart';
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
+import 'package:kreatif_laundry_offline_app/core/utils/date_formatter.dart';
+import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
 
 class InvoiceGenerator {
   /// Generate invoice number

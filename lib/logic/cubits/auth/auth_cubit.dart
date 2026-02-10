@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_laundry_offline_app/data/models/user.dart';
-import 'package:flutter_laundry_offline_app/data/repositories/auth_repository.dart';
-import 'package:flutter_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/data/models/user.dart';
+import 'package:kreatif_laundry_offline_app/data/repositories/auth_repository.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
