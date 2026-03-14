@@ -28,6 +28,8 @@ class SettingsCubit extends Cubit<SettingsState> {
             AppConstants.defaultLaundryPhone,
         invoicePrefix: settings[AppConstants.keyInvoicePrefix] ??
             AppConstants.defaultInvoicePrefix,
+        fonnteToken: settings[AppConstants.keyFonnteToken] ?? 
+            AppConstants.defaultFonnteToken,
       );
 
       _currentInfo = laundryInfo;
@@ -136,6 +138,30 @@ class SettingsCubit extends Cubit<SettingsState> {
     } catch (e) {
       emit(SettingsError(
           message: 'Gagal memperbarui prefix invoice: ${e.toString()}'));
+    }
+  }
+
+  Future<void> updateFonnteToken(String token) async {
+    if (token.trim().isEmpty) {
+      emit(const SettingsError(message: 'Token Fonnte tidak boleh kosong'));
+      return;
+    }
+
+    emit(SettingsUpdating());
+
+    try {
+      await _repository.setSetting(AppConstants.keyFonnteToken, token.trim());
+
+      final updatedInfo = _currentInfo!.copyWith(fonnteToken: token.trim());
+      _currentInfo = updatedInfo;
+
+      emit(SettingsUpdated(
+        message: 'Token Fonnte berhasil diperbarui',
+        laundryInfo: updatedInfo,
+      ));
+    } catch (e) {
+      emit(SettingsError(
+          message: 'Gagal memperbarui Token Fonnte: ${e.toString()}'));
     }
   }
 }

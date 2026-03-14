@@ -9,6 +9,8 @@ import 'package:kreatif_laundry_offline_app/core/utils/date_formatter.dart';
 import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
 import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_cubit.dart';
 import 'package:kreatif_laundry_offline_app/logic/cubits/auth/auth_state.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/settings/settings_cubit.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/auth/login_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/main_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/onboarding/onboarding_screen.dart';
@@ -51,7 +53,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => AuthCubit()..checkAuthStatus())],
+      providers: [
+        BlocProvider(create: (_) => AuthCubit()..checkAuthStatus()),
+        BlocProvider(create: (_) => PrinterCubit()..initialize()),
+        BlocProvider(create: (_) => SettingsCubit()..loadSettings()),
+      ],
       child: MaterialApp(
         title: 'Kreatif Laundry (Offline)',
         debugShowCheckedModeBanner: false,

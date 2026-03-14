@@ -52,9 +52,11 @@ class AppConstants {
   static const String keyPrinterAddress = 'printer_address';
   static const String keyLastInvoiceDate = 'last_invoice_date';
   static const String keyLastInvoiceNumber = 'last_invoice_number';
+  static const String keyFonnteToken = 'fonnte_token';
 
   // Default Laundry Info
   static const String defaultLaundryName = 'Kreatif Laundry';
   static const String defaultLaundryAddress = 'Jalan Mrutu Kalianyar 1C Surabaya';
   static const String defaultLaundryPhone = '6281932701147';
+  static const String defaultFonnteToken = '000';
 }

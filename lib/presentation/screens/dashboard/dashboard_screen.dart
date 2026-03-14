@@ -408,10 +408,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => PrinterCubit(),
-                        child: const PrinterSettingsScreen(),
-                      ),
+                      builder: (_) => const PrinterSettingsScreen(),
                     ),
                   );
                 },

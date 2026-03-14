@@ -42,35 +42,38 @@ class PrinterService {
 
     // Try to reconnect to saved printer
     if (_connectedAddress != null && _connectedAddress!.isNotEmpty) {
-      if (!Platform.isWindows) {
-        await connect(BluetoothDevice(
-          name: _connectedName ?? 'Unknown',
-          address: _connectedAddress!,
-        ));
-      }
+      await connect(BluetoothDevice(
+        name: _connectedName ?? 'Unknown',
+        address: _connectedAddress!,
+      ));
     }
   }
 
   /// Check if Bluetooth is available
   Future<bool> isBluetoothAvailable() async {
-    if (Platform.isWindows) return false;
-    final isAvailable = await PrintBluetoothThermal.bluetoothEnabled;
-    return isAvailable;
+    try {
+      final isAvailable = await PrintBluetoothThermal.bluetoothEnabled;
+      return isAvailable;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Get paired devices
   Future<List<BluetoothDevice>> getPairedDevices() async {
-    if (Platform.isWindows) return [];
-    final List<BluetoothInfo> devices =
-        await PrintBluetoothThermal.pairedBluetooths;
-    return devices
-        .map((d) => BluetoothDevice(name: d.name, address: d.macAdress))
-        .toList();
+    try {
+      final List<BluetoothInfo> devices =
+          await PrintBluetoothThermal.pairedBluetooths;
+      return devices
+          .map((d) => BluetoothDevice(name: d.name, address: d.macAdress))
+          .toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   /// Connect to device
   Future<bool> connect(BluetoothDevice device) async {
-    if (Platform.isWindows) return false;
     try {
       final result = await PrintBluetoothThermal.connect(
         macPrinterAddress: device.address,
@@ -92,8 +95,9 @@ class PrinterService {
 
   /// Disconnect from device
   Future<void> disconnect() async {
-    if (Platform.isWindows) return;
-    await PrintBluetoothThermal.disconnect;
+    try {
+      await PrintBluetoothThermal.disconnect;
+    } catch (_) {}
     _connectedAddress = null;
     _connectedName = null;
 
@@ -105,7 +109,6 @@ class PrinterService {
 
   /// Check connection status
   Future<bool> checkConnection() async {
-    if (Platform.isWindows) return false;
     if (_connectedAddress == null) {
       // Try to load from saved preferences
       final prefs = await SharedPreferences.getInstance();
@@ -114,8 +117,12 @@ class PrinterService {
       if (_connectedAddress == null) return false;
     }
 
-    final status = await PrintBluetoothThermal.connectionStatus;
-    return status;
+    try {
+      final status = await PrintBluetoothThermal.connectionStatus;
+      return status;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Get saved printer info
@@ -129,7 +136,6 @@ class PrinterService {
 
   /// Try to reconnect to saved printer
   Future<bool> reconnectSavedPrinter() async {
-    if (Platform.isWindows) return false;
     final prefs = await SharedPreferences.getInstance();
     final savedMac = prefs.getString(_keyPrinterMac);
     final savedName = prefs.getString(_keyPrinterName);
@@ -171,7 +177,6 @@ class PrinterService {
 
   /// Ensure printer is connected, try to reconnect if needed
   Future<bool> ensureConnected() async {
-    if (Platform.isWindows) return false;
     // Load saved paper size
     final prefs = await SharedPreferences.getInstance();
     _paperSize = prefs.getString(_keyPaperSize) ?? '58';
@@ -187,13 +192,17 @@ class PrinterService {
 
   /// Print order receipt
   Future<bool> printReceipt(Order order) async {
-    if (Platform.isWindows) {
-      // Use PDF Printing on Windows
+    bool isConnected = await ensureConnected();
+
+    if (Platform.isWindows && !isConnected) {
+      // Use PDF Printing on Windows if Bluetooth is not connected
       await PdfService.instance.printOrderReceipt(order);
       return true;
     }
-    if (!await ensureConnected()) {
-      throw Exception('Printer tidak terhubung. Silakan hubungkan printer di Settings.');
+
+    if (!isConnected) {
+      throw Exception(
+          'Printer tidak terhubung. Silakan hubungkan printer di Settings.');
     }
 
     try {
@@ -211,11 +220,15 @@ class PrinterService {
 
   /// Print test page
   Future<bool> printTest() async {
-    if (Platform.isWindows) {
-      throw Exception('Printing is not supported on Windows yet.');
+    bool isConnected = await ensureConnected();
+
+    if (Platform.isWindows && !isConnected) {
+      throw Exception('Printing thermal is not supported on Windows without Bluetooth connection.');
     }
-    if (!await ensureConnected()) {
-      throw Exception('Printer tidak terhubung. Silakan hubungkan printer di Settings.');
+
+    if (!isConnected) {
+      throw Exception(
+          'Printer tidak terhubung. Silakan hubungkan printer di Settings.');
     }
 
     try {

@@ -15,6 +15,7 @@ import 'package:kreatif_laundry_offline_app/presentation/screens/settings/user_m
 import 'package:kreatif_laundry_offline_app/presentation/screens/services/service_list_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/customers/customer_list_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/settings/printer_settings_screen.dart';
+import 'package:kreatif_laundry_offline_app/logic/cubits/printer/printer_cubit.dart';
 import 'package:kreatif_laundry_offline_app/data/services/database_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -30,12 +31,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _settingsCubit = SettingsCubit()..loadSettings();
+    _settingsCubit = context.read<SettingsCubit>();
   }
 
   @override
   void dispose() {
-    _settingsCubit.close();
     super.dispose();
   }
 
@@ -377,7 +377,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
         BlocListener<SettingsCubit, SettingsState>(
-          bloc: _settingsCubit,
           listener: (context, state) {
             if (state is SettingsUpdated) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -411,7 +410,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // Settings content
                 Expanded(
                   child: BlocBuilder<SettingsCubit, SettingsState>(
-                    bloc: _settingsCubit,
                     builder: (context, settingsState) {
                       // Get laundry info from state
                       LaundryInfo? laundryInfo;
@@ -566,7 +564,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 context: context,
                                 icon: Icons.print,
                                 title: 'Pengaturan Printer',
-                                subtitle: 'Coming Soon',
+                                subtitle: 'Kelola Printer Bluetooth',
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -576,6 +574,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   );
                                 },
+                              ),
+                              _buildDivider(),
+                               _buildDivider(),
+                               _buildSettingTile(
+                                context: context,
+                                icon: Icons.vpn_key,
+                                title: 'Fonnte API Token',
+                                 subtitle: (laundryInfo?.fonnteToken ?? '').toString().isEmpty
+                                     ? 'Belum diatur'
+                                     : 'Sudah diatur (ketuk untuk ubah)',
+                                 onTap: () => _showEditDialog(
+                                   title: 'Ubah Token Fonnte',
+                                   currentValue: (laundryInfo?.fonnteToken ?? '').toString(),
+                                  hint: 'Masukkan token API Fonnte',
+                                  icon: Icons.vpn_key,
+                                  onSave: (value) =>
+                                      _settingsCubit.updateFonnteToken(value),
+                                ),
                               ),
                             ],
                           ),
