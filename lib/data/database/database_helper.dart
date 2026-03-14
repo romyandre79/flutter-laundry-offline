@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
 import 'package:kreatif_laundry_offline_app/core/utils/password_helper.dart';
 
@@ -16,11 +18,10 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
+    final dbPath = await getDbPath();
 
     return await openDatabase(
-      path,
+      dbPath,
       version: AppConstants.databaseVersion,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
@@ -177,7 +178,7 @@ class DatabaseHelper {
 
     // Order Items indexes
     await db.execute('CREATE INDEX idx_order_items_order ON order_items(order_id)');
-    
+
     // Order Images indexes
     await db.execute('CREATE INDEX idx_order_images_order ON order_images(order_id)');
 
@@ -263,8 +264,7 @@ class DatabaseHelper {
   }
 
   Future<void> deleteDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, AppConstants.databaseName);
+    final path = await getDbPath();
     await databaseFactory.deleteDatabase(path);
     _database = null;
   }
@@ -272,5 +272,16 @@ class DatabaseHelper {
   Future<void> resetDatabase() async {
     await deleteDatabase();
     await database; // This will recreate the database
+  }
+
+  Future<String> getDbPath() async {
+    final String directoryPath;
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final docsDir = await getApplicationDocumentsDirectory();
+      directoryPath = docsDir.path;
+    } else {
+      directoryPath = await getDatabasesPath();
+    }
+    return join(directoryPath, AppConstants.databaseName);
   }
 }

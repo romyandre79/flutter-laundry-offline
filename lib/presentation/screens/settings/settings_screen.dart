@@ -15,6 +15,7 @@ import 'package:kreatif_laundry_offline_app/presentation/screens/settings/user_m
 import 'package:kreatif_laundry_offline_app/presentation/screens/services/service_list_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/customers/customer_list_screen.dart';
 import 'package:kreatif_laundry_offline_app/presentation/screens/settings/printer_settings_screen.dart';
+import 'package:kreatif_laundry_offline_app/data/services/database_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -194,6 +195,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppThemeColors.primarySurface,
+                borderRadius: AppRadius.smRadius,
+              ),
+              child: const Icon(Icons.info, color: AppThemeColors.primary),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Text('About', style: AppTypography.titleLarge),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAboutRow('Creator', 'Kreatif'),
+            const SizedBox(height: AppSpacing.md),
+            _buildAboutRow('PhoneNo', '081932701147'),
+            const SizedBox(height: AppSpacing.md),
+            _buildAboutRow('Address', 'Jl Serut Jaya No 74, Bekasi'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Tutup',
+              style: AppTypography.labelMedium.copyWith(color: AppThemeColors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutRow(String label, String value) {
+    return Row(
+      children: [
+        Text(
+          '$label:',
+          style: AppTypography.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppThemeColors.textSecondary,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(
+          value,
+          style: AppTypography.bodyMedium,
+        ),
+      ],
+    );
+  }
+
   void _showEditDialog({
     required String title,
     required String currentValue,
@@ -366,6 +429,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           const SizedBox(height: AppSpacing.lg),
 
                           // Laundry Info Section
+                          if (user != null && user.role == UserRole.owner)
                           _buildSection(
                             title: 'Informasi Laundry',
                             children: [
@@ -431,8 +495,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
 
                           // Service Management Section
+                          if (user != null && user.role == UserRole.owner)
                           _buildSection(
-                            title: 'Layanan',
+                            title: 'Master Data',
                             children: [
                               _buildSettingTile(
                                 context: context,
@@ -451,13 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   );
                                 },
                               ),
-                            ],
-                          ),
-
-                          // Customer Management Section
-                          _buildSection(
-                            title: 'Pelanggan',
-                            children: [
+                              _buildDivider(),
                               _buildSettingTile(
                                 context: context,
                                 icon: Icons.people_alt,
@@ -479,6 +538,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
 
                           // App Settings Section
+                          if (user != null && user.role == UserRole.owner)
                           _buildSection(
                             title: 'Pengaturan Aplikasi',
                             children: [
@@ -521,36 +581,147 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
 
                           // User Management Section
-                          _buildSection(
-                            title: 'Manajemen User',
-                            children: [
-                              _buildSettingTile(
-                                context: context,
-                                icon: Icons.people,
-                                title: 'Kelola User',
-                                subtitle: 'Tambah, edit, atau hapus user',
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BlocProvider(
-                                        create: (_) => UserCubit(),
-                                        child: const UserManagementScreen(),
+                          if (user != null && user.role == UserRole.owner)
+                            _buildSection(
+                              title: 'Manajemen User',
+                              children: [
+                                _buildSettingTile(
+                                  context: context,
+                                  icon: Icons.people,
+                                  title: 'Kelola User',
+                                  subtitle: 'Tambah, edit, atau hapus user',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => BlocProvider(
+                                          create: (_) => UserCubit(),
+                                          child: const UserManagementScreen(),
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              _buildDivider(),
-                              _buildSettingTile(
-                                context: context,
-                                icon: Icons.lock,
-                                title: 'Ubah Password',
-                                subtitle: 'Ganti password akun Anda',
-                                onTap: () => _showChangePasswordDialog(context),
-                              ),
-                            ],
-                          ),
+                                    );
+                                  },
+                                ),
+                                _buildDivider(),
+                                _buildSettingTile(
+                                  context: context,
+                                  icon: Icons.lock,
+                                  title: 'Ubah Password',
+                                  subtitle: 'Ganti password akun Anda',
+                                  onTap: () => _showChangePasswordDialog(context),
+                                ),
+                              ],
+                            ),
+
+                          if (user != null && user.role == UserRole.owner)
+                            _buildSection(
+                              title: 'Manajemen Data',
+                              children: [
+                                _buildSettingTile(
+                                  context: context,
+                                  icon: Icons.save,
+                                  title: 'Backup Database',
+                                  subtitle: 'Simpan data ke penyimpanan lokal',
+                                  onTap: () async {
+                                    try {
+                                      await DatabaseService().backupDatabase();
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Backup berhasil'), backgroundColor: Colors.green),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Backup gagal: $e'), backgroundColor: Colors.red),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                                _buildDivider(),
+                                _buildSettingTile(
+                                  context: context,
+                                  icon: Icons.restore,
+                                  title: 'Restore Database',
+                                  subtitle: 'Pulihkan data dari file backup',
+                                  onTap: () async {
+                                    try {
+                                        // Confirm first
+                                        final confirm = await showDialog<bool>(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text('Konfirmasi Restore'),
+                                            content: const Text('Restore akan menimpa data yang ada. Lanjutkan?'),
+                                            actions: [
+                                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                                              ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore')),
+                                            ],
+                                          ),
+                                        );
+
+                                        if (confirm == true) {
+                                          await DatabaseService().restoreDatabase();
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Restore berhasil. Silakan restart aplikasi.'), backgroundColor: Colors.green),
+                                            );
+                                          }
+                                        }
+                                    } catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Restore gagal: $e'), backgroundColor: Colors.red),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                                _buildDivider(),
+                                _buildSettingTile(
+                                  context: context,
+                                  icon: Icons.delete_forever,
+                                  title: 'Reset Database',
+                                  subtitle: 'Hapus semua data (Hati-hati!)',
+                                  onTap: () async {
+                                     final confirm = await showDialog<bool>(
+                                       context: context,
+                                       builder: (ctx) => AlertDialog(
+                                         title: const Text('Reset Database?'),
+                                         content: const Text('Semua data akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!'),
+                                         actions: [
+                                           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                                           ElevatedButton(
+                                             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                             onPressed: () => Navigator.pop(ctx, true),
+                                             child: const Text('Reset', style: TextStyle(color: Colors.white)),
+                                           ),
+                                         ],
+                                       ),
+                                     );
+
+                                     if (confirm == true) {
+                                        try {
+                                          await DatabaseService().resetDatabase();
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Database berhasil di-reset'), backgroundColor: Colors.green),
+                                            );
+                                            // Optionally logout or restart
+                                            context.read<AuthCubit>().logout();
+                                          }
+                                        } catch (e) {
+                                           if (mounted) {
+                                             ScaffoldMessenger.of(context).showSnackBar(
+                                               SnackBar(content: Text('Reset gagal: $e'), backgroundColor: Colors.red),
+                                             );
+                                           }
+                                        }
+                                     }
+                                  },
+                                ),
+                              ],
+                            ),                        
 
                           // About Section
                           _buildSection(
@@ -564,15 +735,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 showArrow: false,
                                 onTap: null,
                               ),
-                              // _buildDivider(),
-                              // _buildSettingTile(
-                              //   context: context,
-                              //   icon: Icons.school,
-                              //   title: '.com',
-                              //   subtitle: 'Belajar Flutter dari NOL hingga PRO',
-                              //   showArrow: false,
-                              //   onTap: null,
-                              // ),
+                              _buildDivider(),
+                              _buildSettingTile(
+                                context: context,
+                                icon: Icons.info,
+                                title: 'About',
+                                subtitle: 'Informasi Pembuat',
+                                onTap: () => _showAboutDialog(context),
+                              ),
                             ],
                           ),
 
