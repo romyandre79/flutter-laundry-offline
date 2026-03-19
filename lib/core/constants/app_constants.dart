@@ -1,6 +1,9 @@
 class AppConstants {
   AppConstants._();
 
+  // Demo Mode
+  static const bool isDemo = true;
+
   // App Info
   static const String appName = 'Kreatif Laundry';
   static const String appVersion = '1.0.0';

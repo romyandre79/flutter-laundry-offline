@@ -1,3 +1,4 @@
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
 import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
 import 'package:kreatif_laundry_offline_app/data/models/order.dart';
 import 'package:kreatif_laundry_offline_app/logic/cubits/report/report_state.dart';
@@ -24,6 +25,7 @@ class ReportRepository {
       where: 'order_date BETWEEN ? AND ?',
       whereArgs: [start.toIso8601String(), end.toIso8601String()],
       orderBy: 'order_date DESC',
+      limit: AppConstants.isDemo ? 5 : null,
     );
 
     return result.map((map) => Order.fromMap(map)).toList();

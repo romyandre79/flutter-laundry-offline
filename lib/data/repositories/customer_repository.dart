@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:kreatif_laundry_offline_app/core/constants/app_constants.dart';
 import 'package:kreatif_laundry_offline_app/data/database/database_helper.dart';
 import 'package:kreatif_laundry_offline_app/data/models/customer.dart';
 
@@ -13,6 +15,7 @@ class CustomerRepository {
     final result = await db.query(
       'customers',
       orderBy: 'name ASC',
+      limit: AppConstants.isDemo ? 5 : null,
     );
     return result.map((map) => Customer.fromMap(map)).toList();
   }
@@ -37,6 +40,7 @@ class CustomerRepository {
       where: 'name LIKE ? OR phone LIKE ?',
       whereArgs: ['%$query%', '%$query%'],
       orderBy: 'name ASC',
+      limit: AppConstants.isDemo ? 5 : null,
     );
     return result.map((map) => Customer.fromMap(map)).toList();
   }
@@ -265,7 +269,7 @@ class CustomerRepository {
     final result = await db.query(
       'customers',
       orderBy: 'total_spent DESC',
-      limit: limit,
+      limit: AppConstants.isDemo ? min(limit, 5) : limit,
     );
     return result.map((map) => Customer.fromMap(map)).toList();
   }
