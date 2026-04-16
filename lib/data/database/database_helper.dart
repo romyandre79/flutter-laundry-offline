@@ -60,6 +60,7 @@ class DatabaseHelper {
         total_orders INTEGER DEFAULT 0,
         total_spent INTEGER DEFAULT 0,
         last_order_date TEXT,
+        default_discount REAL DEFAULT 0,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
@@ -92,6 +93,7 @@ class DatabaseHelper {
         total_items INTEGER DEFAULT 0,
         total_weight REAL DEFAULT 0,
         total_price INTEGER NOT NULL,
+        total_discount INTEGER DEFAULT 0,
         paid INTEGER DEFAULT 0,
         notes TEXT,
         created_by INTEGER,
@@ -112,6 +114,7 @@ class DatabaseHelper {
         quantity REAL NOT NULL,
         unit TEXT NOT NULL,
         price_per_unit INTEGER NOT NULL,
+        discount INTEGER DEFAULT 0,
         subtotal INTEGER NOT NULL,
         FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
         FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL
@@ -253,6 +256,13 @@ class DatabaseHelper {
         )
       ''');
       await db.execute('CREATE INDEX idx_order_images_order ON order_images(order_id)');
+    }
+
+    if (oldVersion < 4) {
+      // Add discount fields
+      await db.execute('ALTER TABLE customers ADD COLUMN default_discount REAL DEFAULT 0');
+      await db.execute('ALTER TABLE orders ADD COLUMN total_discount INTEGER DEFAULT 0');
+      await db.execute('ALTER TABLE order_items ADD COLUMN discount INTEGER DEFAULT 0');
     }
   }
 

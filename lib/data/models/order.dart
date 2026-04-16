@@ -70,8 +70,9 @@ class Order extends Equatable {
   final DateTime? dueDate;
   final OrderStatus status;
   final int totalItems;
-  final double totalWeight;
+  final int totalWeight;
   final int totalPrice;
+  final int totalDiscount;
   final int paid;
   final String? notes;
   final int? createdBy;
@@ -95,6 +96,7 @@ class Order extends Equatable {
     this.totalItems = 0,
     this.totalWeight = 0,
     required this.totalPrice,
+    this.totalDiscount = 0,
     this.paid = 0,
     this.notes,
     this.createdBy,
@@ -118,6 +120,7 @@ class Order extends Equatable {
       'total_items': totalItems,
       'total_weight': totalWeight,
       'total_price': totalPrice,
+      'total_discount': totalDiscount,
       'paid': paid,
       'notes': notes,
       'created_by': createdBy,
@@ -141,6 +144,7 @@ class Order extends Equatable {
       totalItems: (map['total_items'] as int?) ?? 0,
       totalWeight: (map['total_weight'] as num?)?.toDouble() ?? 0,
       totalPrice: map['total_price'] as int,
+      totalDiscount: (map['total_discount'] as int?) ?? 0,
       paid: (map['paid'] as int?) ?? 0,
       notes: map['notes'] as String?,
       createdBy: map['created_by'] as int?,
@@ -166,6 +170,7 @@ class Order extends Equatable {
     int? totalItems,
     double? totalWeight,
     int? totalPrice,
+    int? totalDiscount,
     int? paid,
     String? notes,
     int? createdBy,
@@ -187,6 +192,7 @@ class Order extends Equatable {
       totalItems: totalItems ?? this.totalItems,
       totalWeight: totalWeight ?? this.totalWeight,
       totalPrice: totalPrice ?? this.totalPrice,
+      totalDiscount: totalDiscount ?? this.totalDiscount,
       paid: paid ?? this.paid,
       notes: notes ?? this.notes,
       createdBy: createdBy ?? this.createdBy,
@@ -205,8 +211,8 @@ class Order extends Equatable {
 
   // Aliases for printer service
   String get invoiceNumber => invoiceNo;
-  int get subtotal => totalPrice;
-  int get discount => 0; // No discount feature yet
+  int get subtotal => totalPrice + totalDiscount;
+  int get discount => totalDiscount;
   int get totalAmount => totalPrice;
   int get paidAmount => paid;
 
@@ -253,6 +259,7 @@ class Order extends Equatable {
         totalItems,
         totalWeight,
         totalPrice,
+        totalDiscount,
         paid,
         notes,
         createdBy,

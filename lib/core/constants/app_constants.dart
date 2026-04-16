@@ -11,7 +11,7 @@ class AppConstants {
 
   // Database
   static const String databaseName = 'laundryfull.db';
-  static const int databaseVersion = 3;
+  static const int databaseVersion = 4;
 
   // Invoice
   static const String defaultInvoicePrefix = 'LNDR';

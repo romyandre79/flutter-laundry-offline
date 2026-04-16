@@ -38,6 +38,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   DateTime _dueDate = DateTime.now().add(const Duration(days: 3));
   PaymentMethod _paymentMethod = PaymentMethod.cash;
   bool _isLoading = false;
+  int _orderDiscount = 0;
 
   // Selected customer
   Customer? _selectedCustomer;
@@ -52,6 +53,8 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   int get _totalPrice {
     return _items.fold(0, (sum, item) => sum + item.subtotal);
   }
+
+  int get _netPrice => _totalPrice - _orderDiscount;
 
   @override
   void dispose() {
@@ -70,7 +73,12 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
         _items.removeAt(existing);
       } else {
         // Belum ada, tambahkan
-        _items.add(_OrderItemEntry(service: service));
+        final item = _OrderItemEntry(service: service);
+        if (_selectedCustomer != null) {
+          item.discount = ((service.price * _selectedCustomer!.defaultDiscount) / 100).round();
+          item.updateSubtotal();
+        }
+        _items.add(item);
       }
     });
   }
@@ -281,6 +289,12 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       _selectedCustomer = customer;
       _customerNameController.text = customer.name;
       _customerPhoneController.text = customer.phone ?? '';
+
+      // Apply default discount to all items
+      for (var item in _items) {
+        item.discount = ((item.service.price * customer.defaultDiscount) / 100).round();
+        item.updateSubtotal();
+      }
     });
   }
 
@@ -289,6 +303,13 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       _selectedCustomer = null;
       _customerNameController.clear();
       _customerPhoneController.clear();
+
+      // Reset discount for all items
+      for (var item in _items) {
+        item.discount = 0;
+        item.updateSubtotal();
+      }
+      _orderDiscount = 0;
     });
   }
 
@@ -324,7 +345,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     final payment = ThousandSeparatorFormatter.parseToInt(_paymentController.text);
 
     // Jika bayar lebih dari total, tampilkan dialog konfirmasi kembalian
-    if (payment > _totalPrice) {
+    if (payment > _netPrice) {
       _showChangeConfirmationDialog(payment);
     } else {
       _submitOrder(payment);
@@ -332,7 +353,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   }
 
   void _showChangeConfirmationDialog(int payment) {
-    final change = payment - _totalPrice;
+    final change = payment - _netPrice;
 
     showDialog(
       context: context,
@@ -372,7 +393,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
               ),
               child: Column(
                 children: [
-                  _buildPaymentRow('Total', CurrencyFormatter.format(_totalPrice)),
+                  _buildPaymentRow('Total Harus Bayar', CurrencyFormatter.format(_netPrice)),
                   const SizedBox(height: 8),
                   _buildPaymentRow('Bayar', CurrencyFormatter.format(payment)),
                   const Divider(height: 16),
@@ -459,6 +480,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
               quantity: e.quantity.toDouble(),
               unit: e.service.unit.value,
               pricePerUnit: e.service.price,
+              discount: e.discount,
               subtotal: e.subtotal,
             ))
         .toList();
@@ -475,6 +497,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           createdBy: userId,
           initialPayment: payment,
           paymentMethod: _paymentMethod,
+          totalDiscount: _orderDiscount,
           images: _capturedImages.map((e) => e.path).toList(),
         );
   }
@@ -510,6 +533,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
         appBar: AppBar(
           title: const Text('Order Baru'),
         ),
+        bottomNavigationBar: _buildSummaryPanel(),
         body: Form(
           key: _formKey,
           child: ListView(
@@ -1118,6 +1142,30 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
                           color: AppColors.textSecondary,
                         ),
                       ),
+                      if (item.discount > 0)
+                        InkWell(
+                          onTap: () => _showItemDiscountDialog(index, item),
+                          child: Text(
+                            'Diskon: -${CurrencyFormatter.format(item.discount)}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: AppThemeColors.error,
+                              height: 1.5,
+                            ),
+                          ),
+                        )
+                      else
+                        InkWell(
+                          onTap: () => _showItemDiscountDialog(index, item),
+                          child: Text(
+                            'Tambah Diskon',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: AppThemeColors.primary,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -1242,11 +1290,206 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       ),
     );
   }
+
+  Widget _buildSummaryPanel() {
+    final itemDiscountTotal = _items.fold(0, (sum, item) => sum + (item.discount * item.quantity).round());
+    final totalGross = _items.fold(0, (sum, item) => sum + (item.service.price * item.quantity).round());
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildSummaryRow('Total Nilai', totalGross),
+          _buildSummaryRow(
+            'Diskon Tambahan', 
+            _orderDiscount,
+            isClickable: true,
+            onTap: _showOrderDiscountDialog,
+          ),
+          _buildSummaryRow(
+            'Total Diskon', 
+            itemDiscountTotal + _orderDiscount,
+            color: AppThemeColors.error,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Divider(height: 1),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Total Bayar',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: AppThemeColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      CurrencyFormatter.format(_netPrice),
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppThemeColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppThemeColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          'Buat Order',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, int value, {Color? color, bool isClickable = false, VoidCallback? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label, 
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: isClickable ? AppThemeColors.primary : AppThemeColors.textSecondary,
+                decoration: isClickable ? TextDecoration.underline : null,
+              )
+            ),
+            Text(
+              CurrencyFormatter.format(value),
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: color ?? AppThemeColors.textPrimary,
+                fontWeight: color != null ? FontWeight.bold : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showItemDiscountDialog(int index, _OrderItemEntry item) {
+    final controller = TextEditingController(text: item.discount.toString());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Diskon ${item.service.name} (Rp)'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Masukkan nilai Rupiah',
+            prefixText: 'Rp ',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () {
+              final val = int.tryParse(controller.text) ?? 0;
+              setState(() {
+                _items[index].discount = val;
+                _items[index].updateSubtotal();
+              });
+              Navigator.pop(ctx);
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showOrderDiscountDialog() {
+    final controller = TextEditingController(text: _orderDiscount.toString());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Diskon Tambahan Pesanan (Rp)'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Masukkan nilai Rupiah',
+            prefixText: 'Rp ',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () {
+              final val = int.tryParse(controller.text) ?? 0;
+              setState(() {
+                _orderDiscount = val;
+              });
+              Navigator.pop(ctx);
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _OrderItemEntry {
   final Service service;
   double quantity;
+  int discount = 0;
   int subtotal;
 
   _OrderItemEntry({
@@ -1255,7 +1498,7 @@ class _OrderItemEntry {
   }) : subtotal = service.price;
 
   void updateSubtotal() {
-    subtotal = (service.price * quantity).round();
+    subtotal = ((service.price - discount) * quantity).round();
   }
 
   /// Format quantity display based on unit type

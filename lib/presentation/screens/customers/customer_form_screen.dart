@@ -20,6 +20,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   final _notesController = TextEditingController();
+  final _defaultDiscountController = TextEditingController();
 
   bool get isEditing => widget.customer != null;
 
@@ -31,6 +32,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
       _phoneController.text = widget.customer!.phone ?? '';
       _addressController.text = widget.customer!.address ?? '';
       _notesController.text = widget.customer!.notes ?? '';
+      _defaultDiscountController.text = widget.customer!.defaultDiscount.toString();
     }
   }
 
@@ -40,6 +42,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
     _phoneController.dispose();
     _addressController.dispose();
     _notesController.dispose();
+    _defaultDiscountController.dispose();
     super.dispose();
   }
 
@@ -58,6 +61,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
+      defaultDiscount: double.tryParse(_defaultDiscountController.text) ?? 0,
       totalOrders: widget.customer?.totalOrders ?? 0,
       totalSpent: widget.customer?.totalSpent ?? 0,
       createdAt: widget.customer?.createdAt,
@@ -113,6 +117,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
 
                       // Form Card
                       _buildFormCard(),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Discount Card
+                      _buildDiscountCard(),
 
                       const SizedBox(height: AppSpacing.lg),
 
