@@ -276,7 +276,9 @@ class DatabaseHelper {
 
   Future<String> getDbPath() async {
     final String directoryPath;
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    if (Platform.isWindows) {
+      directoryPath = dirname(Platform.resolvedExecutable);
+    } else if (Platform.isLinux || Platform.isMacOS) {
       final docsDir = await getApplicationDocumentsDirectory();
       directoryPath = docsDir.path;
     } else {
