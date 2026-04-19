@@ -59,6 +59,7 @@ class ServiceRepository {
       'price': service.price,
       'duration_days': service.durationDays,
       'is_active': 1,
+      'barcode': service.barcode,
       'created_at': now,
     });
 
@@ -92,6 +93,7 @@ class ServiceRepository {
         'unit': service.unit.value,
         'price': service.price,
         'duration_days': service.durationDays,
+        'barcode': service.barcode,
       },
       where: 'id = ?',
       whereArgs: [service.id],

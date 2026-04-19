@@ -21,6 +21,7 @@ class _ServiceFormScreenState extends State<ServiceFormScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _durationController = TextEditingController();
+  final _barcodeController = TextEditingController();
   ServiceUnit _selectedUnit = ServiceUnit.kg;
   bool _isLoading = false;
 
@@ -33,6 +34,7 @@ class _ServiceFormScreenState extends State<ServiceFormScreen> {
       _nameController.text = widget.service!.name;
       _priceController.text = ThousandSeparatorFormatter.format(widget.service!.price);
       _durationController.text = widget.service!.durationDays.toString();
+      _barcodeController.text = widget.service!.barcode ?? '';
       _selectedUnit = widget.service!.unit;
     } else {
       _durationController.text = '3'; // Default 3 days
@@ -44,6 +46,7 @@ class _ServiceFormScreenState extends State<ServiceFormScreen> {
     _nameController.dispose();
     _priceController.dispose();
     _durationController.dispose();
+    _barcodeController.dispose();
     super.dispose();
   }
 
@@ -55,6 +58,7 @@ class _ServiceFormScreenState extends State<ServiceFormScreen> {
         unit: _selectedUnit,
         price: ThousandSeparatorFormatter.parseToInt(_priceController.text),
         durationDays: int.parse(_durationController.text),
+        barcode: _barcodeController.text.trim().isEmpty ? null : _barcodeController.text.trim(),
         isActive: true,
       );
 
@@ -274,6 +278,21 @@ class _ServiceFormScreenState extends State<ServiceFormScreen> {
               }
               return null;
             },
+          ),
+
+          const SizedBox(height: AppSpacing.lg),
+          
+          // Barcode Field
+          _buildInputLabel('Barcode', isRequired: false),
+          const SizedBox(height: AppSpacing.sm),
+          TextFormField(
+            controller: _barcodeController,
+            style: AppTypography.bodyMedium,
+            textInputAction: TextInputAction.next,
+            decoration: _buildInputDecoration(
+              hintText: 'Scan atau ketik barcode (opsional)',
+              prefixIcon: Icons.qr_code_scanner,
+            ),
           ),
 
           const SizedBox(height: AppSpacing.lg),

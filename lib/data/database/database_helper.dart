@@ -75,6 +75,7 @@ class DatabaseHelper {
         price INTEGER NOT NULL,
         duration_days INTEGER DEFAULT 3,
         is_active INTEGER DEFAULT 1,
+        barcode TEXT,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     ''');
@@ -263,6 +264,11 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE customers ADD COLUMN default_discount REAL DEFAULT 0');
       await db.execute('ALTER TABLE orders ADD COLUMN total_discount INTEGER DEFAULT 0');
       await db.execute('ALTER TABLE order_items ADD COLUMN discount INTEGER DEFAULT 0');
+    }
+
+    if (oldVersion < 5) {
+      // Add barcode field to services
+      await db.execute('ALTER TABLE services ADD COLUMN barcode TEXT');
     }
   }
 

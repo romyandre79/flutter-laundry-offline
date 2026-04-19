@@ -34,6 +34,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   final _customerPhoneController = TextEditingController();
   final _notesController = TextEditingController();
   final _paymentController = TextEditingController();
+  final _serviceSearchController = TextEditingController();
 
   DateTime _dueDate = DateTime.now().add(const Duration(days: 3));
   PaymentMethod _paymentMethod = PaymentMethod.cash;
@@ -62,6 +63,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     _customerPhoneController.dispose();
     _notesController.dispose();
     _paymentController.dispose();
+    _serviceSearchController.dispose();
     super.dispose();
   }
 
@@ -986,9 +988,14 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   Widget _buildServiceSelector() {
     return BlocBuilder<ServiceCubit, ServiceState>(
       builder: (context, state) {
-        final services = context.read<ServiceCubit>().services;
+        final allServices = context.read<ServiceCubit>().services;
+        final query = _serviceSearchController.text.toLowerCase();
+        final services = allServices.where((s) {
+          return s.name.toLowerCase().contains(query) || 
+                 (s.barcode != null && s.barcode!.toLowerCase().contains(query));
+        }).toList();
 
-        if (services.isEmpty) {
+        if (allServices.isEmpty) {
           return Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -1025,64 +1032,66 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           );
         }
 
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppThemeColors.border),
-          ),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: services.length,
-            separatorBuilder: (_, __) => Divider(
-              height: 1,
-              color: AppThemeColors.border,
+        return Column(
+          children: [
+            // Search Field
+            TextField(
+              controller: _serviceSearchController,
+              decoration: InputDecoration(
+                hintText: 'Cari layanan atau scan barcode...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _serviceSearchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _serviceSearchController.clear();
+                          });
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (_) => setState(() {}),
             ),
-            itemBuilder: (context, index) {
-              final service = services[index];
-              final isSelected = _items.any((e) => e.service.id == service.id);
-
-              return InkWell(
-                onTap: () => _toggleItem(service),
-                borderRadius: BorderRadius.vertical(
-                  top: index == 0 ? const Radius.circular(12) : Radius.zero,
-                  bottom: index == services.length - 1 ? const Radius.circular(12) : Radius.zero,
+            const SizedBox(height: 12),
+            
+            if (services.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Layanan tidak ditemukan',
+                  style: GoogleFonts.poppins(color: AppThemeColors.textSecondary),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      // Checkbox
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppThemeColors.primary : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: isSelected ? AppThemeColors.primary : AppThemeColors.textSecondary.withValues(alpha: 0.4),
-                            width: 2,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(Icons.check, size: 16, color: Colors.white)
-                            : null,
+              )
+            else
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppThemeColors.border),
+                ),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: services.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: AppThemeColors.border,
+                  ),
+                  itemBuilder: (context, index) {
+                    final service = services[index];
+                    final isSelected = _items.any((e) => e.service.id == service.id);
+
+                    return InkWell(
+                      onTap: () => _toggleItem(service),
+                      borderRadius: BorderRadius.vertical(
+                        top: index == 0 ? const Radius.circular(12) : Radius.zero,
+                        bottom: index == services.length - 1 ? const Radius.circular(12) : Radius.zero,
                       ),
-                      const SizedBox(width: 12),
-                      // Service info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
                           children: [
-                            Text(
-                              service.name,
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500,
-                                color: AppThemeColors.textPrimary,
-                              ),
-                            ),
-                            Text(
                               'per ${service.unit.value}',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
